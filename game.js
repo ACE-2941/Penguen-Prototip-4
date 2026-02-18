@@ -65,7 +65,13 @@ let moveDir = 0;
 /* ---------------- MENU START ---------------- */
 
 btnNewGame.onclick = () => {
-    if (menuVideo) menuVideo.muted = !soundEnabled; // EKLENDİ
+    // ✅ MENÜ VİDEOSUNU DURDUR + SESİ KES
+    if (menuVideo) {
+        menuVideo.pause();
+        menuVideo.currentTime = 0;
+        menuVideo.muted = true;
+    }
+
     menuDiv.style.display = "none";
     puanYazisi.style.display = "block";
     resetGame();
@@ -128,7 +134,7 @@ function update() {
             obstacles.splice(i, 1);
             puan++;
             puanYazisi.innerText = "PUAN: " + puan;
-            playPassSound(); // DEĞİŞTİ
+            playPassSound();
         }
 
         if (
