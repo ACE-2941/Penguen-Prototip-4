@@ -29,7 +29,7 @@ let puan = 0;
 let gameActive = false;
 
 // SES
-const passSound = new Audio("assets/rise1.aif");
+const passSound = new Audio("assets/rise1.mp3");
 
 function playPassSound() {
     if (!soundEnabled) return;
