@@ -4,14 +4,38 @@ const puanYazisi = document.getElementById("puanTablosu");
 const menuDiv = document.getElementById("menu");
 const btnNewGame = document.getElementById("btnNewGame");
 
+/* --------- SES UI EK --------- */
+const soundUI = document.getElementById("soundUI");
+const menuVideo = document.getElementById("menuVideo");
+let soundEnabled = localStorage.getItem("sound") !== "off";
+
+function updateSoundUI() {
+    soundUI.textContent = soundEnabled ? "🔊 Ses" : "🔇 Ses";
+    if (menuVideo) menuVideo.muted = !soundEnabled;
+}
+updateSoundUI();
+
+soundUI.onclick = () => {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem("sound", soundEnabled ? "on" : "off");
+    updateSoundUI();
+};
+/* -------------------------------- */
+
 canvas.width = 360;
 canvas.height = 640;
 
 let puan = 0;
-let gameActive = false; // menu yüzünden başlangıçta false
+let gameActive = false;
 
 // SES
 const passSound = new Audio("assets/rise1.aif");
+
+function playPassSound() {
+    if (!soundEnabled) return;
+    passSound.currentTime = 0;
+    passSound.play().catch(()=>{});
+}
 
 // Görseller
 const penguinImg = new Image();
@@ -41,6 +65,7 @@ let moveDir = 0;
 /* ---------------- MENU START ---------------- */
 
 btnNewGame.onclick = () => {
+    if (menuVideo) menuVideo.muted = !soundEnabled; // EKLENDİ
     menuDiv.style.display = "none";
     puanYazisi.style.display = "block";
     resetGame();
@@ -103,8 +128,7 @@ function update() {
             obstacles.splice(i, 1);
             puan++;
             puanYazisi.innerText = "PUAN: " + puan;
-            passSound.currentTime = 0;
-            passSound.play();
+            playPassSound(); // DEĞİŞTİ
         }
 
         if (
