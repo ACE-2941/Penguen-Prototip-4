@@ -32,13 +32,14 @@ body {
     object-fit: cover;
 }
 
+/* ✅ Yazılar birbirine yaklaştırıldı */
 #menu-ui {
     position: absolute;
     left: 24px;
     top: 120px;
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 8px; /* 22 → 8 */
     z-index: 60;
 }
 
@@ -54,18 +55,20 @@ body {
     opacity: 1;
 }
 
+/* ✅ Title + logo sağ alt köşe */
 #titleBlock {
     position: absolute;
-    left: 18px;
-    bottom: 28px;
+    right: 18px;
+    bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
     z-index: 60;
 }
 
+/* ✅ Logo başlık kadar büyük */
 #titleLogo {
-    width: 54px;
+    width: 210px;
 }
 
 #titleText {
