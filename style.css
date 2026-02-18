@@ -95,3 +95,16 @@ canvas {
     display: block;
     image-rendering: pixelated;
 }
+
+#soundUI {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+    color: white;
+    cursor: pointer;
+    z-index: 80;
+    user-select: none;
+    text-shadow: 2px 2px 4px black;
+}
