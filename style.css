@@ -32,47 +32,48 @@ body {
     object-fit: cover;
 }
 
-/* ✅ Yazılar birbirine yaklaştırıldı */
+/* ✅ SOL ÜST BUTONLAR */
 #menu-ui {
     position: absolute;
-    left: 24px;
-    top: 120px;
+    top: 20px;
+    left: 20px;
     display: flex;
     flex-direction: column;
-    gap: 8px; /* 22 → 8 */
+    gap: 4px; /* boşluk ciddi azaltıldı */
     z-index: 60;
 }
 
 .menu-btn {
-    width: 160px;
+    width: 200px; /* büyütüldü */
     cursor: pointer;
     opacity: 0.95;
-    transition: 0.2s;
+    transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+/* Hover artık itici değil */
 .menu-btn:hover {
-    transform: translateX(6px);
+    transform: scale(1.04);
     opacity: 1;
 }
 
-/* ✅ Title + logo sağ alt köşe */
+/* ---------- SAĞ ALT LOGO BLOK ---------- */
+
 #titleBlock {
     position: absolute;
-    right: 18px;
-    bottom: 20px;
+    right: 16px;
+    bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px; /* bitişik gibi durması için azaltıldı */
     z-index: 60;
 }
 
-/* ✅ Logo başlık kadar büyük */
 #titleLogo {
-    width: 210px;
+    width: 160px; /* büyütüldü */
 }
 
 #titleText {
-    width: 210px;
+    width: 200px; /* biraz daha büyük */
 }
 
 /* ---------- GAME UI ---------- */
