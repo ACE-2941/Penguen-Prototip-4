@@ -3,12 +3,20 @@ const ctx = canvas.getContext("2d");
 const puanYazisi = document.getElementById("puanTablosu");
 const menuDiv = document.getElementById("menu");
 const btnNewGame = document.getElementById("btnNewGame");
-
-/* --------- SES UI --------- */
-const soundUI = document.getElementById("soundUI");
 const menuVideo = document.getElementById("menuVideo");
+const soundUI = document.getElementById("soundUI");
 
 let soundEnabled = localStorage.getItem("sound") !== "off";
+
+// ✅ VIDEO DONMA ÇÖZÜMÜ: Sayfa etkileşimiyle videoyu başlat
+window.addEventListener('load', () => {
+    menuVideo.play().catch(() => {
+        // Otomatik oynatma engellenirse kullanıcı ekrana tıkladığında başlat
+        document.body.addEventListener('click', () => {
+            menuVideo.play();
+        }, { once: true });
+    });
+});
 
 function updateSoundUI() {
     soundUI.textContent = soundEnabled ? "🔊 Ses" : "🔇 Ses";
@@ -21,7 +29,6 @@ soundUI.onclick = () => {
     localStorage.setItem("sound", soundEnabled ? "on" : "off");
     updateSoundUI();
 };
-/* -------------------------------- */
 
 canvas.width = 360;
 canvas.height = 640;
@@ -29,55 +36,29 @@ canvas.height = 640;
 let puan = 0;
 let gameActive = false;
 
-/* ---------- SES ---------- */
-const passSound = new Audio("assets/rise.mp3");
+// ✅ SES DOSYASI: rise1.mp3 olarak güncellendi
+const passSound = new Audio("assets/rise1.mp3");
 
 function playPassSound() {
     if (!soundEnabled) return;
     passSound.currentTime = 0;
-    passSound.play().catch(() => {});
+    passSound.play().catch(e => console.log("Ses çalınamadı:", e));
 }
 
 /* ---------- GÖRSELLER ---------- */
-const penguinImg = new Image();
-penguinImg.src = "assets/penguin.png";
+const penguinImg = new Image(); penguinImg.src = "assets/penguin.png";
+const backgroundImg = new Image(); backgroundImg.src = "assets/arka-plan.jpg";
+const iceImg = new Image(); iceImg.src = "assets/buz.png";
 
-const backgroundImg = new Image();
-backgroundImg.src = "assets/arka-plan.jpg";
-
-const iceImg = new Image();
-iceImg.src = "assets/buz.png";
-
-/* ---------- PENGUEN ---------- */
-const penguin = {
-    x: 148,
-    y: 540,
-    w: 64,
-    h: 64,
-    frameX: 0,
-    maxFrames: 6,
-    fps: 0,
-    stagger: 8,
-};
-
+const penguin = { x: 148, y: 540, w: 64, h: 64, frameX: 0, maxFrames: 6, fps: 0, stagger: 8 };
 let obstacles = [];
 let timer = 0;
 let moveDir = 0;
 
-/* ---------------- MENU START ---------------- */
-
 btnNewGame.onclick = () => {
-
-    // Menü videosunu durdur
-    if (menuVideo) {
-        menuVideo.pause();
-        menuVideo.currentTime = 0;
-        menuVideo.muted = true;
-    }
-
+    menuVideo.pause();
     menuDiv.style.display = "none";
     puanYazisi.style.display = "block";
-
     resetGame();
     gameActive = true;
     gameLoop();
@@ -91,115 +72,53 @@ function resetGame() {
     penguin.x = 148;
 }
 
-/* ---------------- CONTROLS ---------------- */
-
+// Kontroller (Mevcut kodun devamı)
 window.onkeydown = (e) => {
-    if (!gameActive) return;
     if (e.key === "ArrowLeft") moveDir = -1;
     if (e.key === "ArrowRight") moveDir = 1;
 };
-
 window.onkeyup = () => moveDir = 0;
-
-canvas.ontouchstart = (e) => {
-    if (!gameActive) return;
-    e.preventDefault();
-    const tx = e.touches[0].clientX;
-    moveDir = tx < window.innerWidth / 2 ? -1 : 1;
-};
-
-canvas.ontouchend = () => moveDir = 0;
-
-/* ---------------- UPDATE ---------------- */
 
 function update() {
     if (!gameActive) return;
-
-    // Hareket
     penguin.x += moveDir * 8;
-
     if (penguin.x < 0) penguin.x = 0;
-    if (penguin.x > canvas.width - penguin.w)
-        penguin.x = canvas.width - penguin.w;
+    if (penguin.x > canvas.width - penguin.w) penguin.x = canvas.width - penguin.w;
 
-    // Engel üretimi
     if (++timer > 55) {
-        obstacles.push({
-            x: Math.random() * (canvas.width - 40),
-            y: -80,
-            w: 40,
-            h: 80,
-        });
+        obstacles.push({ x: Math.random() * (canvas.width - 40), y: -80, w: 40, h: 80 });
         timer = 0;
     }
 
     obstacles.forEach((o, i) => {
-
         o.y += 6 + puan / 20;
-
-        // Engel geçtiyse
         if (o.y > canvas.height) {
             obstacles.splice(i, 1);
             puan++;
             puanYazisi.innerText = "PUAN: " + puan;
-            playPassSound();
+            playPassSound(); // Engel geçildiğinde çalar
         }
-
-        // Çarpışma
-        if (
-            penguin.x + 15 < o.x + o.w &&
-            penguin.x + 49 > o.x &&
-            penguin.y + 15 < o.y + o.h &&
-            penguin.y + 60 > o.y
-        ) {
+        if (penguin.x + 15 < o.x + o.w && penguin.x + 49 > o.x && 
+            penguin.y + 15 < o.y + o.h && penguin.y + 60 > o.y) {
             gameActive = false;
             alert("PUANIN: " + puan);
             location.reload();
         }
     });
 
-    // Sprite animasyonu
     penguin.fps++;
-    if (penguin.fps % penguin.stagger === 0) {
-        penguin.frameX = (penguin.frameX + 1) % penguin.maxFrames;
-    }
+    if (penguin.fps % penguin.stagger === 0) penguin.frameX = (penguin.frameX + 1) % penguin.maxFrames;
 }
-
-/* ---------------- DRAW ---------------- */
 
 function draw() {
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (backgroundImg.complete) {
-        ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-    }
-
-    if (iceImg.complete) {
-        obstacles.forEach(o => {
-            ctx.drawImage(iceImg, o.x, o.y, o.w, o.h);
-        });
-    }
-
+    if (backgroundImg.complete) ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+    if (iceImg.complete) obstacles.forEach(o => ctx.drawImage(iceImg, o.x, o.y, o.w, o.h));
     if (penguinImg.complete) {
-
-        const spriteWidth = penguinImg.width / penguin.maxFrames;
-
-        ctx.drawImage(
-            penguinImg,
-            penguin.frameX * spriteWidth,
-            0,
-            spriteWidth,
-            penguinImg.height,
-            penguin.x,
-            penguin.y,
-            penguin.w,
-            penguin.h
-        );
+        const sw = penguinImg.width / penguin.maxFrames;
+        ctx.drawImage(penguinImg, penguin.frameX * sw, 0, sw, penguinImg.height, penguin.x, penguin.y, penguin.w, penguin.h);
     }
 }
-
-/* ---------------- LOOP ---------------- */
 
 function gameLoop() {
     update();
