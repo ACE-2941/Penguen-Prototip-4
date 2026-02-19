@@ -39,7 +39,7 @@ body {
     left: 20px;
     display: flex;
     flex-direction: column;
-    gap: 4px; /* boşluk ciddi azaltıldı */
+    gap: 1px; /* boşluk ciddi azaltıldı */
     z-index: 60;
 }
 
@@ -52,7 +52,7 @@ body {
 
 /* Hover artık itici değil */
 .menu-btn:hover {
-    transform: scale(1.04);
+    transform: scale(0.9);
     opacity: 1;
 }
 
