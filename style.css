@@ -112,3 +112,21 @@ canvas {
     user-select: none;
     text-shadow: 2px 2px 4px black;
 }
+
+#menu-ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* kritik */
+    z-index: 60;
+}
+
+.menu-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* araları yakın */
+    margin-bottom: 120px; /* aşağı konum */
+}
