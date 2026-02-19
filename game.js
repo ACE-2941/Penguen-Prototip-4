@@ -6,44 +6,39 @@ const btnNewGame = document.getElementById("btnNewGame");
 const menuVideo = document.getElementById("menuVideo");
 const soundUI = document.getElementById("soundUI");
 
-let soundEnabled = localStorage.getItem("sound") !== "off";
+canvas.width = 360;
+canvas.height = 640;
 
-// ✅ VIDEO DONMA ÇÖZÜMÜ: Sayfa etkileşimiyle videoyu başlat
-window.addEventListener('load', () => {
+let soundEnabled = localStorage.getItem("sound") !== "off";
+let gameActive = false;
+let puan = 0;
+let moveDir = 0;
+
+/* ✅ VIDEO DONMA ÇÖZÜMÜ */
+window.onload = () => {
     menuVideo.play().catch(() => {
-        // Otomatik oynatma engellenirse kullanıcı ekrana tıkladığında başlat
-        document.body.addEventListener('click', () => {
-            menuVideo.play();
-        }, { once: true });
+        // Tarayıcı engellerse ilk dokunuşta başlat
+        document.addEventListener('touchstart', () => menuVideo.play(), {once:true});
+        document.addEventListener('mousedown', () => menuVideo.play(), {once:true});
     });
-});
+};
+
+/* ✅ SES SİSTEMİ */
+const passSound = new Audio("assets/rise1.mp3");
+function playPassSound() {
+    if (!soundEnabled) return;
+    let s = passSound.cloneNode();
+    s.play().catch(() => {});
+}
 
 function updateSoundUI() {
     soundUI.textContent = soundEnabled ? "🔊 Ses" : "🔇 Ses";
-    if (menuVideo) menuVideo.muted = !soundEnabled;
 }
-updateSoundUI();
-
 soundUI.onclick = () => {
     soundEnabled = !soundEnabled;
     localStorage.setItem("sound", soundEnabled ? "on" : "off");
     updateSoundUI();
 };
-
-canvas.width = 360;
-canvas.height = 640;
-
-let puan = 0;
-let gameActive = false;
-
-// ✅ SES DOSYASI: rise1.mp3 olarak güncellendi
-const passSound = new Audio("assets/rise1.mp3");
-
-function playPassSound() {
-    if (!soundEnabled) return;
-    passSound.currentTime = 0;
-    passSound.play().catch(e => console.log("Ses çalınamadı:", e));
-}
 
 /* ---------- GÖRSELLER ---------- */
 const penguinImg = new Image(); penguinImg.src = "assets/penguin.png";
@@ -53,8 +48,23 @@ const iceImg = new Image(); iceImg.src = "assets/buz.png";
 const penguin = { x: 148, y: 540, w: 64, h: 64, frameX: 0, maxFrames: 6, fps: 0, stagger: 8 };
 let obstacles = [];
 let timer = 0;
-let moveDir = 0;
 
+/* ✅ KONTROLLER (TOUCH & KEYBOARD) */
+window.onkeydown = (e) => {
+    if (e.key === "ArrowLeft") moveDir = -1;
+    if (e.key === "ArrowRight") moveDir = 1;
+};
+window.onkeyup = () => moveDir = 0;
+
+canvas.addEventListener('touchstart', (e) => {
+    if (!gameActive) return;
+    e.preventDefault();
+    const touchX = e.touches[0].clientX;
+    moveDir = touchX < window.innerWidth / 2 ? -1 : 1;
+}, {passive: false});
+canvas.addEventListener('touchend', () => moveDir = 0);
+
+/* ✅ OYUN MANTIĞI */
 btnNewGame.onclick = () => {
     menuVideo.pause();
     menuDiv.style.display = "none";
@@ -71,13 +81,6 @@ function resetGame() {
     timer = 0;
     penguin.x = 148;
 }
-
-// Kontroller (Mevcut kodun devamı)
-window.onkeydown = (e) => {
-    if (e.key === "ArrowLeft") moveDir = -1;
-    if (e.key === "ArrowRight") moveDir = 1;
-};
-window.onkeyup = () => moveDir = 0;
 
 function update() {
     if (!gameActive) return;
@@ -96,7 +99,7 @@ function update() {
             obstacles.splice(i, 1);
             puan++;
             puanYazisi.innerText = "PUAN: " + puan;
-            playPassSound(); // Engel geçildiğinde çalar
+            playPassSound(); // ✅ SES BURADA ÇALAR
         }
         if (penguin.x + 15 < o.x + o.w && penguin.x + 49 > o.x && 
             penguin.y + 15 < o.y + o.h && penguin.y + 60 > o.y) {
