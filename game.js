@@ -4,9 +4,10 @@ const puanYazisi = document.getElementById("puanTablosu");
 const menuDiv = document.getElementById("menu");
 const btnNewGame = document.getElementById("btnNewGame");
 
-/* --------- SES UI EK --------- */
+/* --------- SES UI --------- */
 const soundUI = document.getElementById("soundUI");
 const menuVideo = document.getElementById("menuVideo");
+
 let soundEnabled = localStorage.getItem("sound") !== "off";
 
 function updateSoundUI() {
@@ -28,16 +29,16 @@ canvas.height = 640;
 let puan = 0;
 let gameActive = false;
 
-// SES
-const passSound = new Audio("assets/rise1.mp3");
+/* ---------- SES ---------- */
+const passSound = new Audio("assets/rise.mp3");
 
 function playPassSound() {
     if (!soundEnabled) return;
     passSound.currentTime = 0;
-    passSound.play().catch(()=>{});
+    passSound.play().catch(() => {});
 }
 
-// Görseller
+/* ---------- GÖRSELLER ---------- */
 const penguinImg = new Image();
 penguinImg.src = "assets/penguin.png";
 
@@ -47,6 +48,7 @@ backgroundImg.src = "assets/arka-plan.jpg";
 const iceImg = new Image();
 iceImg.src = "assets/buz.png";
 
+/* ---------- PENGUEN ---------- */
 const penguin = {
     x: 148,
     y: 540,
@@ -65,7 +67,8 @@ let moveDir = 0;
 /* ---------------- MENU START ---------------- */
 
 btnNewGame.onclick = () => {
-    // ✅ MENÜ VİDEOSUNU DURDUR + SESİ KES
+
+    // Menü videosunu durdur
     if (menuVideo) {
         menuVideo.pause();
         menuVideo.currentTime = 0;
@@ -74,6 +77,7 @@ btnNewGame.onclick = () => {
 
     menuDiv.style.display = "none";
     puanYazisi.style.display = "block";
+
     resetGame();
     gameActive = true;
     gameLoop();
@@ -111,12 +115,14 @@ canvas.ontouchend = () => moveDir = 0;
 function update() {
     if (!gameActive) return;
 
+    // Hareket
     penguin.x += moveDir * 8;
 
     if (penguin.x < 0) penguin.x = 0;
     if (penguin.x > canvas.width - penguin.w)
         penguin.x = canvas.width - penguin.w;
 
+    // Engel üretimi
     if (++timer > 55) {
         obstacles.push({
             x: Math.random() * (canvas.width - 40),
@@ -128,8 +134,10 @@ function update() {
     }
 
     obstacles.forEach((o, i) => {
+
         o.y += 6 + puan / 20;
 
+        // Engel geçtiyse
         if (o.y > canvas.height) {
             obstacles.splice(i, 1);
             puan++;
@@ -137,6 +145,7 @@ function update() {
             playPassSound();
         }
 
+        // Çarpışma
         if (
             penguin.x + 15 < o.x + o.w &&
             penguin.x + 49 > o.x &&
@@ -149,6 +158,7 @@ function update() {
         }
     });
 
+    // Sprite animasyonu
     penguin.fps++;
     if (penguin.fps % penguin.stagger === 0) {
         penguin.frameX = (penguin.frameX + 1) % penguin.maxFrames;
@@ -158,6 +168,7 @@ function update() {
 /* ---------------- DRAW ---------------- */
 
 function draw() {
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (backgroundImg.complete) {
@@ -171,6 +182,7 @@ function draw() {
     }
 
     if (penguinImg.complete) {
+
         const spriteWidth = penguinImg.width / penguin.maxFrames;
 
         ctx.drawImage(
