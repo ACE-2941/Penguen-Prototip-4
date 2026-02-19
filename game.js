@@ -1,9 +1,9 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const puanYazisi = document.getElementById("puanTablosu");
+const menuVideo = document.getElementById("menuVideo");
 const menuDiv = document.getElementById("menu");
 const btnNewGame = document.getElementById("btnNewGame");
-const menuVideo = document.getElementById("menuVideo");
+const puanYazisi = document.getElementById("puanTablosu");
 const soundUI = document.getElementById("soundUI");
 
 canvas.width = 360;
@@ -11,19 +11,25 @@ canvas.height = 640;
 
 let soundEnabled = localStorage.getItem("sound") !== "off";
 let gameActive = false;
-let puan = 0;
 let moveDir = 0;
+let puan = 0;
 
-/* ✅ VIDEO DONMA ÇÖZÜMÜ */
-window.onload = () => {
-    menuVideo.play().catch(() => {
-        // Tarayıcı engellerse ilk dokunuşta başlat
-        document.addEventListener('touchstart', () => menuVideo.play(), {once:true});
-        document.addEventListener('mousedown', () => menuVideo.play(), {once:true});
-    });
-};
+/* ---------- 1. VİDEO & SES SİSTEMİ ---------- */
+function videoVeSesDuzenle() {
+    menuVideo.muted = true; // Tarayıcı izin versin diye önce sessiz yap
+    menuVideo.play().catch(e => console.log("Video başlatılamadı"));
 
-/* ✅ SES SİSTEMİ */
+    // Kullanıcı ekrana dokunduğu an sesi aç
+    const sesAc = () => {
+        if (soundEnabled) menuVideo.muted = false;
+        document.removeEventListener('touchstart', sesAc);
+        document.removeEventListener('mousedown', sesAc);
+    };
+    document.addEventListener('touchstart', sesAc);
+    document.addEventListener('mousedown', sesAc);
+}
+window.addEventListener('load', videoVeSesDuzenle);
+
 const passSound = new Audio("assets/rise1.mp3");
 function playPassSound() {
     if (!soundEnabled) return;
@@ -31,31 +37,21 @@ function playPassSound() {
     s.play().catch(() => {});
 }
 
-function updateSoundUI() {
-    soundUI.textContent = soundEnabled ? "🔊 Ses" : "🔇 Ses";
-}
 soundUI.onclick = () => {
     soundEnabled = !soundEnabled;
     localStorage.setItem("sound", soundEnabled ? "on" : "off");
-    updateSoundUI();
+    soundUI.textContent = soundEnabled ? "🔊 Ses" : "🔇 Ses";
+    if (menuVideo) menuVideo.muted = !soundEnabled;
 };
 
-/* ---------- GÖRSELLER ---------- */
-const penguinImg = new Image(); penguinImg.src = "assets/penguin.png";
-const backgroundImg = new Image(); backgroundImg.src = "assets/arka-plan.jpg";
-const iceImg = new Image(); iceImg.src = "assets/buz.png";
-
-const penguin = { x: 148, y: 540, w: 64, h: 64, frameX: 0, maxFrames: 6, fps: 0, stagger: 8 };
-let obstacles = [];
-let timer = 0;
-
-/* ✅ KONTROLLER (TOUCH & KEYBOARD) */
+/* ---------- 2. KONTROLLER (MOBİL & PC) ---------- */
 window.onkeydown = (e) => {
     if (e.key === "ArrowLeft") moveDir = -1;
     if (e.key === "ArrowRight") moveDir = 1;
 };
 window.onkeyup = () => moveDir = 0;
 
+// Mobilde dokunma
 canvas.addEventListener('touchstart', (e) => {
     if (!gameActive) return;
     e.preventDefault();
@@ -64,7 +60,16 @@ canvas.addEventListener('touchstart', (e) => {
 }, {passive: false});
 canvas.addEventListener('touchend', () => moveDir = 0);
 
-/* ✅ OYUN MANTIĞI */
+/* ---------- 3. GÖRSELLER ---------- */
+const penguinImg = new Image(); penguinImg.src = "assets/penguin.png";
+const backgroundImg = new Image(); backgroundImg.src = "assets/arka-plan.jpg";
+const iceImg = new Image(); iceImg.src = "assets/buz.png";
+
+const penguin = { x: 148, y: 540, w: 64, h: 64, frameX: 0, maxFrames: 6, fps: 0, stagger: 8 };
+let obstacles = [];
+let timer = 0;
+
+/* ---------- 4. OYUN DÖNGÜSÜ ---------- */
 btnNewGame.onclick = () => {
     menuVideo.pause();
     menuDiv.style.display = "none";
@@ -99,7 +104,7 @@ function update() {
             obstacles.splice(i, 1);
             puan++;
             puanYazisi.innerText = "PUAN: " + puan;
-            playPassSound(); // ✅ SES BURADA ÇALAR
+            playPassSound(); // ✅ BURADA ÇALIYOR
         }
         if (penguin.x + 15 < o.x + o.w && penguin.x + 49 > o.x && 
             penguin.y + 15 < o.y + o.h && penguin.y + 60 > o.y) {
