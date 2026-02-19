@@ -3,41 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YIKIK PENGUEN-2</title>
+    <title>Cold & Oblivion</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="game-container">
-
-    <!-- MENU -->
     <div id="menu">
         <video id="menuVideo" autoplay muted loop playsinline>
             <source src="assets/menuvideo.mp4" type="video/mp4">
         </video>
 
-        <!-- SOL ÜST BUTON BLOĞU -->
         <div id="menu-ui">
-    <img src="assets/newgame.svg" class="menu-btn" id="btnNewGame">
+            <img src="assets/newgame.svg" class="menu-btn" id="btnNewGame">
+            <img src="assets/settings.svg" class="menu-btn" id="btnSettings">
+            <img src="assets/score.svg" class="menu-btn" id="btnScore">
+        </div>
 
-    <div class="menu-bottom">
-        <img src="assets/settings.svg" class="menu-btn">
-        <img src="assets/score.svg" class="menu-btn">
-    </div>
-</div>
-
-        <!-- SAĞ ALT LOGO + TITLE -->
         <div id="titleBlock">
             <img src="assets/penguinlogo.svg" id="titleLogo">
             <img src="assets/title.svg" id="titleText">
         </div>
     </div>
 
-    <!-- GAME -->
     <div id="puanTablosu">PUAN: 0</div>
     <canvas id="gameCanvas"></canvas>
     <div id="soundUI">🔊 Ses</div>
-
 </div>
 
 <script src="game.js"></script>
