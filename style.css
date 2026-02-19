@@ -44,7 +44,7 @@ body {
 }
 
 .menu-btn {
-    width: 200px; /* büyütüldü */
+    width: 300px; /* büyütüldü */
     cursor: pointer;
     opacity: 0.95;
     transition: transform 0.15s ease, opacity 0.15s ease;
